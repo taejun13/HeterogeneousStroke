@@ -1,0 +1,265 @@
+﻿<Window x:Class="HeterogeneousStroke.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HeterogeneousStroke"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="975.718" Width="1454.254"
+        FontFamily="Arial">
+    <Grid Margin="0,0,0,0">
+        <Image Source="./img/hand.png" Margin="10,64,1184,579"></Image>
+        <StackPanel Orientation="Horizontal" Margin="13,12,1037,0" Height="28" VerticalAlignment="Top" Width="396">
+            <Button Name="ButtonReset" Content="Port Reset" Width="92" Height="27" Click="ButtonReset_Click" />
+            <ComboBox Name="ComboboxSerials" Width="120"/>
+            <Button x:Name="ButtonConnect" Content="Connect Arduino" Width="152" Height="27" Click="ButtonConnect_Click"/>
+        </StackPanel>
+        <Label Content="Heterogeneous Stroke"  Margin="1120,8,8,893" FontSize="30" Width="318" Height="44"/>
+        <StackPanel Orientation="Horizontal" Width="461" Margin="238,236,747,672">
+            <Label Content="Unit Vibrating Duration (ms)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Slider x:Name="vibDuration" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="1000" TickPlacement="BottomRight" TickFrequency="100" IsSnapToTickEnabled="True"  Value="500"/>
+            <TextBox Text="{Binding Value, ElementName=vibDuration, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" TextAlignment="Center" Width="45" Height="25" />
+            <Button x:Name="vibDurationFix" Width="60" VerticalAlignment="Center" Content="Set" Height="25" Margin="0,0" Click="vibDurationFix_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Width="445" Margin="238,273,763,635">
+            <Label Content="Modulation On Time (ms)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Slider x:Name="modulationOnTime" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="40"/>
+            <TextBox Text="{Binding Value, ElementName=modulationOnTime, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" TextAlignment="Center" Width="45" Height="25" />
+            <Button x:Name="modulationOnTimeFix" Width="60" VerticalAlignment="Center" Content="Set" Height="25" Margin="0,0" Click="modulationOnTimeFix_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Width="445" Margin="238,310,763,598">
+            <Label Content="Modulation Off Time (ms)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Slider x:Name="modulationOffTime" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="40"/>
+            <TextBox Text="{Binding Value, ElementName=modulationOffTime, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" TextAlignment="Center" Width="45" Height="25" />
+            <Button x:Name="modulationOffTimeFix" Width="60" VerticalAlignment="Center" Content="Set" Height="25" Margin="0,0" Click="modulationOffTimeFix_Click"/>
+        </StackPanel>
+
+
+
+        <Border Background="GhostWhite" BorderBrush="Gray" BorderThickness="1" Margin="34,366,1090,351">
+            <StackPanel Orientation="Vertical" Margin="0,10,-1,10">
+                <Label Content="1st Motor" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Height="46" Width="294" FontSize="24" Margin="0,0,0,0"/>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="292" Margin="8,0,21,10">
+                    <Label Content="Power(%)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor1power" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="100"/>
+                    <TextBox Text="{Binding Value, ElementName=motor1power, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="313" Margin="8,0,0,10">
+                    <Label Content="Frequency(Hz)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor1frequency" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="400" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="300"/>
+                    <TextBox Text="{Binding Value, ElementName=motor1frequency, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="On/Off Modulation (Bumpiness)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <CheckBox Name="motor1Modulation" VerticalAlignment="Center" Margin="20,0,0,0" IsChecked="True" ></CheckBox>
+                </StackPanel>
+                <Button x:Name="motor1Fix" Width="150" VerticalAlignment="Center" Content="Set" Height="45" Margin="0,0,0,0" Click="Motor1Fix_Click"/>
+            </StackPanel>
+        </Border>
+        <Border Background="GhostWhite" BorderBrush="Gray" BorderThickness="1" Margin="34,599,1090,118">
+            <StackPanel Orientation="Vertical" Margin="0,10,0,10">
+                <Label Content="3rd Motor" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Height="46" Width="294" FontSize="24" Margin="0,0,0,0"/>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="Power(%)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor3power" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="100"/>
+                    <TextBox Text="{Binding Value, ElementName=motor3power, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="313" Margin="8,0,-1,10">
+                    <Label Content="Frequency(Hz)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor3frequency" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="400" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="300"/>
+                    <TextBox Text="{Binding Value, ElementName=motor3frequency, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="On/Off Modulation (Bumpiness)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <CheckBox x:Name="motor3Modulation" VerticalAlignment="Center" Margin="20,0,0,0" IsChecked="False"/>
+                </StackPanel>
+                <Button x:Name="motor3Fix" Width="150" VerticalAlignment="Center" Content="Set" Height="45" Margin="0,0,0,0" Click="Motor3Fix_Click"/>
+
+            </StackPanel>
+        </Border>
+        <Border Background="GhostWhite" BorderBrush="Gray" BorderThickness="1" Margin="361,365,763,352">
+            <StackPanel Orientation="Vertical" Margin="0,10,0,10">
+                <Label Content="2nd Motor" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Height="46" Width="294" FontSize="24" Margin="0,0,0,0"/>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="Power(%)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor2power" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="30"/>
+                    <TextBox Text="{Binding Value, ElementName=motor2power, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="310" Margin="8,0,2,10">
+                    <Label Content="Frequency(Hz)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor2frequency" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="400" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="170"/>
+                    <TextBox Text="{Binding Value, ElementName=motor2frequency, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="On/Off Modulation (Bumpiness)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <CheckBox x:Name="motor2Modulation" VerticalAlignment="Center" Margin="20,0,0,0" IsChecked="True"/>
+                </StackPanel>
+                <Button x:Name="motor2Fix" Width="150" VerticalAlignment="Center" Content="Set" Height="45" Margin="0,0,0,0" Click="Motor2Fix_Click"/>
+            </StackPanel>
+        </Border>
+        <Border Background="GhostWhite" BorderBrush="Gray" BorderThickness="1" Margin="361,599,763,118">
+            <StackPanel Orientation="Vertical" Margin="0,10,0,10">
+                <Label Content="4th Motor" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Height="46" Width="294" FontSize="24" Margin="0,0,0,0"/>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="Power(%)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor4power" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="100" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="30"/>
+                    <TextBox Text="{Binding Value, ElementName=motor4power, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="312" Margin="8,0,0,10">
+                    <Label Content="Frequency(Hz)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Slider x:Name="motor4frequency" HorizontalAlignment="Left" Margin="0,0,15,0" VerticalAlignment="Top" Width="150"  Maximum="400" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True"  Value="170"/>
+                    <TextBox Text="{Binding Value, ElementName=motor4frequency, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Width="45" Height="25" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Width="304" Margin="0,0,0,10">
+                    <Label Content="On/Off Modulation (Bumpiness)" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <CheckBox x:Name="motor4Modulation" VerticalAlignment="Center" Margin="20,0,0,0" IsChecked="False"/>
+                </StackPanel>
+                <Button x:Name="motor4Fix" Width="150" VerticalAlignment="Center" Content="Set" Height="45" Margin="0,0,0,0" Click="Motor4Fix_Click"/>
+            </StackPanel>
+        </Border>
+        <Button Name="pattern1" Background="GhostWhite" Margin="714,56,610,776" RenderTransformOrigin="0.5,0.5" Click="Pattern1_Click">
+            <StackPanel>
+                <Image Source="img/pattern1.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern2" Background="GhostWhite" Margin="840,56,484,776" RenderTransformOrigin="0.5,0.5" Click="Pattern2_Click">
+            <StackPanel>
+                <Image Source="img/pattern2.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern3" Background="GhostWhite" Margin="968,56,356,776" RenderTransformOrigin="0.5,0.5" Click="Pattern3_Click">
+            <StackPanel>
+                <Image Source="img/pattern3.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern4" Background="GhostWhite" Margin="1094,56,230,776" RenderTransformOrigin="0.5,0.5" Click="Pattern4_Click">
+            <StackPanel>
+                <Image Source="img/pattern4.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern5" Background="GhostWhite" Margin="714,189,610,640" RenderTransformOrigin="0.5,0.5" Click="Pattern5_Click">
+            <StackPanel>
+                <Image Source="img/pattern5.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern6" Background="GhostWhite" Margin="840,189,484,640" RenderTransformOrigin="0.5,0.5" Click="Pattern6_Click">
+            <StackPanel>
+                <Image Source="img/pattern6.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern7" Background="GhostWhite" Margin="968,189,356,640" RenderTransformOrigin="0.5,0.5" Click="Pattern7_Click">
+            <StackPanel>
+                <Image Source="img/pattern7.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern8" Background="GhostWhite" Margin="1094,189,230,640" RenderTransformOrigin="0.5,0.5" Click="Pattern8_Click">
+            <StackPanel>
+                <Image Source="img/pattern8.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern9" Background="GhostWhite" Margin="714,310,610,524" RenderTransformOrigin="0.5,0.5" Click="Pattern9_Click">
+            <StackPanel>
+                <Image Source="img/pattern9.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern10" Background="GhostWhite" Margin="840,310,484,524" RenderTransformOrigin="0.5,0.5" Click="Pattern10_Click">
+            <StackPanel>
+                <Image Source="img/pattern10.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern11" Background="GhostWhite" Margin="968,310,356,524" RenderTransformOrigin="0.5,0.5" Click="Pattern11_Click">
+            <StackPanel>
+                <Image Source="img/pattern11.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button Name="pattern12" Background="GhostWhite" Margin="1094,310,230,524" RenderTransformOrigin="0.5,0.5" Click="Pattern12_Click">
+            <StackPanel>
+                <Image Source="img/pattern12.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+
+        <Button Name="pattern13" Background="GhostWhite" Margin="1095,567,229,262" RenderTransformOrigin="0.5,0.5" Click="Pattern13_Click">
+            <StackPanel>
+                <Image Source="img/pattern13.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern14" Background="GhostWhite" Margin="1095,688,229,145" RenderTransformOrigin="0.5,0.5" Click="Pattern14_Click">
+            <StackPanel>
+                <Image Source="img/pattern14.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern15" Background="GhostWhite" Margin="714,567,610,262" RenderTransformOrigin="0.5,0.5" Click="Pattern15_Click">
+            <StackPanel>
+                <Image Source="img/pattern15.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern16" Background="GhostWhite" Margin="841,567,483,262" RenderTransformOrigin="0.5,0.5" Click="Pattern16_Click">
+            <StackPanel>
+                <Image Source="img/pattern16.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern17" Background="GhostWhite" Margin="968,567,356,262" RenderTransformOrigin="0.5,0.5" Click="Pattern17_Click">
+            <StackPanel>
+                <Image Source="img/pattern17.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern18" Background="GhostWhite" Margin="714,688,610,145" RenderTransformOrigin="0.5,0.5" Click="Pattern18_Click">
+            <StackPanel>
+                <Image Source="img/pattern18.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern19" Background="GhostWhite" Margin="841,688,483,145" RenderTransformOrigin="0.5,0.5" Click="Pattern19_Click">
+            <StackPanel>
+                <Image Source="img/pattern19.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern20" Background="GhostWhite" Margin="968,688,356,145" RenderTransformOrigin="0.5,0.5" Click="Pattern20_Click">
+            <StackPanel>
+                <Image Source="img/pattern20.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern21" Background="GhostWhite" Margin="714,446,610,383" RenderTransformOrigin="0.5,0.5" Click="Pattern21_Click">
+            <StackPanel>
+                <Image Source="img/pattern21.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern22" Background="GhostWhite" Margin="840,446,484,383" RenderTransformOrigin="0.5,0.5" Click="Pattern22_Click">
+            <StackPanel>
+                <Image Source="img/pattern22.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern23" Background="GhostWhite" Margin="967,446,357,383" RenderTransformOrigin="0.5,0.5" Click="Pattern23_Click">
+            <StackPanel>
+                <Image Source="img/pattern23.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern24" Background="GhostWhite" Margin="1094,446,230,383" RenderTransformOrigin="0.5,0.5" Click="Pattern24_Click">
+            <StackPanel>
+                <Image Source="img/pattern24.png"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+
+        <Button x:Name="pattern25" Background="GhostWhite" Margin="714,815,610,18" RenderTransformOrigin="0.5,0.5" Click="Pattern25_Click">
+            <StackPanel>
+                <Image Source="img/pattern25.PNG"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern26" Background="GhostWhite" Margin="841,815,483,18" RenderTransformOrigin="0.5,0.5" Click="Pattern26_Click">
+            <StackPanel>
+                <Image Source="img/pattern26.PNG"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern27" Background="GhostWhite" Margin="967,815,357,18" RenderTransformOrigin="0.5,0.5" Click="Pattern27_Click">
+            <StackPanel>
+                <Image Source="img/pattern27.PNG"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="pattern28" Background="GhostWhite" Margin="1095,815,229,18" RenderTransformOrigin="0.5,0.5" Click="Pattern28_Click">
+            <StackPanel>
+                <Image Source="img/pattern28.PNG"  Width="100" Height="100" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="randomPlay" VerticalAlignment="Center" Content="Random Play" FontSize="20" Margin="1235,0,37,0" Click="randomPlay_Click" Height="59"  />
+        <Label Name="randomPlayAnswerLabel" Content="" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Width="194" FontSize="24" Margin="1230,539,22,216"/>
+    </Grid>
+</Window>
