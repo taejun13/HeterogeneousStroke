@@ -20,6 +20,6 @@ More information about this work can be found in: [Paper](https://taejun13.githu
 This repository provides materials for reproducing our work:
 * 3D model (.stl) of watch frame
 * Arduino firmware codes that offers independent control of each vibration motors.
-* C# WPF codes that run testing environments (: Delivering EdgeWrite alphanumeric patterns with multiple vibration motors)
+* C# WPF codes that run Heterogeneous Sandbox Program
 * Misc. information (e.g., actuator models, Operating Voltages...)
 
