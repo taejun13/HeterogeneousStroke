@@ -26,7 +26,7 @@ This repository provides materials for reproducing our work:
 ## Sandbox Program
 
 <p align="center">
-    <img src="img/SandboxProgram.PNG", width="700">
+    <img src="img/SandboxProgram.PNG", width="800">
 </p>
 
 You can compose unique vibrations, and produce the Heterogeneous Stroke in Sandbox Program!
