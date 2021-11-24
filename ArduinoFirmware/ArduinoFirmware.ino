@@ -1,60 +1,55 @@
-// ERM
+/*
+ * Writer: Taejun Kim, HCI Lab KAIST
+ * Last Update: 2020. 5. 6
+ * Command (Serial Input) Convention: 
+ *  1) Start vibratiing for i-th actuator: iv  (ex. 1v, 2v, 3v, 4v)
+ *  2) Stop vibrationg for i-th actuator: is (ex. 1s, 2s, 3s, 4s)
+ *  3) Set vibrating frequency F-Hz for i-th actuator: ifF (ex. 1f250, 2f250, 3f170, 4f170)
+ *  4) Set power level A(%) for i-th actuator: iaA (ex. 1a100, 2a050, 3a100, 4a050)
+ *  5) Set on/off modulation on waveform (for "Bumpy" vibration ) - Vibrating On time T for i-th actuator: ibrT (ex. 1br100, 2br040, 3br100 4br040) 
+ *  6) Set on/off modulation on waveform (for "Bumpy" vibration ) - Vibrating Off time T for i-th actuator: ibsT (ex. 1bs000, 2br040, 3br000 4br040) 
+ *  (1br100, 1bs000 means that 1st actuator keeps vibrating without on/off modulation)
+ *  (2br040, 2bs040 means that 1st actuator repeats 40ms of vibration and 40 ms of rest (= 12.5Hz on/off modulation waveform) 
+ *  
+ *  Hardware:
+ *  - We used BD6221 motor driver to implement micro-level PWM control for LRA motors (BD6221 Datasheet: http://www.datasheetq.com/datasheet-download/308094/1/ROHM/BD6221)
+ *  - We used LRA motor of 10 mm diameter and 3.6mm thickness, with 170 Hz resonance frequency. (Our model was provided from Samsung Electro-mechanics but it's not buyable for public)
+ */
 
-const int erm1_f = 2;
-const int erm1_r = 3; 
-const int erm2_f = 5; 
-const int erm2_r = 6; 
-const int erm3_f = 7; 
-const int erm3_r = 8; 
-const int erm4_f = 9; 
-const int erm4_r = 10; 
+/* LRA motor driver pin */
+const int LRA1_F = 2;   // FIn (Control input - Forward; BD6221 Motor Driver)
+const int LRA1_R = 4;   // RIn (Control input - Reverse; BD6221 Motor Driver)
+const int LRA2_F = 7;
+const int LRA2_R = 8;
+const int LRA3_F = 10;
+const int LRA3_R = 11;
+const int LRA4_F = 12;
+const int LRA4_R = 13;
 
-bool ermOn[4] = {false, false, false, false};
-bool ermBurst[4] = {false, false, false, false};
-unsigned long lraBurstStartTime[4] = {0, 0, 0, 0};
-
-int ermBumpRunMS[4] = {100, 100, 100, 100}; // bump 진동 시간(ms)
-int ermBumpStopMS[4] = {0, 0, 0, 0};    // bump 쉬는 시간(ms)
-unsigned long ermRunStartTime[4] = {0, 0, 0, 0};  // erm 틀기 시작한 시간
-
-int PWMpercent = 80;  // (%)
-
-//for motor test
-int millistowait;
-unsigned long recordedtime=99999999999999;
-unsigned long currenttime=0;
-int currentMotorNum;
+/* Variables for actuator control */
+bool LRAOn[4] = {false, false, false, false};
+int LRAFrequency[4] = {170, 170, 170, 170};   // Frequency of LRA (Hz)
+int LRAPeriod[4] = {(int)(1000000.0/170), (int)(1000000.0/170), (int)(1000000.0/166), (int)(1000000.0/166) };   // Period of LRA (microseconds)
+int LRAAmplitude[4] = {100, 100, 100, 100};   // Power (%) of LRA
+int LRARunMS_ForBumpiness[4] = {100, 100, 100, 100};  // bump 느낌의 진동에서 진동 시간(ms)
+int LRAStopMS_ForBumpiness[4] = {0, 0, 0, 0};    // bump 느낌의 진동에서 쉬는 시간(ms)
+unsigned long LRARunStartTime[4] = {0, 0, 0, 0};   // LRA 틀기 시작한 시간
 
 void setup() {
+  pinMode (LRA1_F, OUTPUT);
+  pinMode (LRA1_R, OUTPUT);
+  pinMode (LRA2_F, OUTPUT);
+  pinMode (LRA2_R, OUTPUT);
+  pinMode (LRA3_F, OUTPUT);
+  pinMode (LRA3_R, OUTPUT);
+  pinMode (LRA4_F, OUTPUT);
+  pinMode (LRA4_R, OUTPUT);
 
-  TCCR4B = TCCR4B & B11111000 | B00000001;   // for PWM frequency of 31372.55 Hz (D2, D3, D5)
-  TCCR4B = TCCR4B & B11111000 | B00000001;   // for PWM frequency of 31372.55 Hz (D6, D7, D8)
-  TCCR2B = TCCR2B & B11111000 | B00000001;  // for PWM frequency of 31372.55 Hz (D9, D10)
-  
-  pinMode (erm1_f, OUTPUT);
-  pinMode (erm1_r, OUTPUT);
-  pinMode (erm2_f, OUTPUT);
-  pinMode (erm2_r, OUTPUT);
-  pinMode (erm3_f, OUTPUT);
-  pinMode (erm3_r, OUTPUT);
-  pinMode (erm4_f, OUTPUT);
-  pinMode (erm4_r, OUTPUT);
-  
-  digitalWrite(erm1_f, LOW);
-  digitalWrite(erm1_r, LOW);
-  digitalWrite(erm2_f, LOW);
-  digitalWrite(erm2_r, LOW);
-  digitalWrite(erm3_f, LOW);
-  digitalWrite(erm3_r, LOW);
-  digitalWrite(erm4_f, LOW);
-  digitalWrite(erm4_r, LOW);
-  
   Serial.begin(115200);
   while (! Serial);
-  
-  Serial.println("delimiter-MMTD project");
+  Serial.println("Heterogeneous Stroke Firmware Start");
 }
-    
+
 void loop() {
   loopSerial();
   loopMotorOnOff();
@@ -62,8 +57,7 @@ void loop() {
 
 void loopSerial()
 {
-
-  if(Serial.available()>0)
+  if(Serial.available() > 0)
   {
     String inString = Serial.readStringUntil('\n');
     char c1 = inString.charAt(0);
@@ -78,170 +72,88 @@ void loopSerial()
       int motorNum = (int)c1 - 49;
       if(0 <= motorNum && motorNum < 4)
       {
-        ermOn[motorNum] = true;
-        ermRunStartTime[motorNum] = millis();
-      }  
+        LRAOn[motorNum] = true;
+        LRARunStartTime[motorNum] = millis();
+      }
     }
     else if (c2 == 's')
     {
       int motorNum = (int)c1 - 49;
       if(0 <= motorNum && motorNum < 4)
-      {
-        ermOn[motorNum] = false;
-        ermTurnOff(motorNum);
-      }  
+        LRAOn[motorNum] = false;
     }
-    else if (c2 == 't')
+    else if (c2 == 'f')
     {
       int motorNum = (int)c1 - 49;
+      int freq = ((int)c3-48)*100+((int)c4-48)*10+((int)c5-48);
+      int period = (int)((float)1000000 / (float)freq); // Unit : us, microseconds
       if(0 <= motorNum && motorNum < 4)
       {
-        ermOn[motorNum] = true;
-        ermBurst[motorNum] = true;
-        ermRunStartTime[motorNum] = millis();
+        LRAFrequency[motorNum] = freq;
+        LRAPeriod[motorNum] = period;
       }
     }
-    else if (c2 == 'b' && c3 == 'v')
+    else if (c2 == 'a')
     {
       int motorNum = (int)c1 - 49;
-      int runMS = ((int)c4-48)*100+((int)c5-48)*10+((int)c6-48);
+      int amplitude = ((int)c3-48)*100+((int)c4-48)*10+((int)c5-48);
       if(0 <= motorNum && motorNum < 4)
-      {
-        ermBumpRunMS[motorNum] = runMS;
-        /*
-        Serial.print("ERM motor ");
-        Serial.print(motorNum+1);
-        Serial.print(" BumpRunMS: ");
-        Serial.println(runMS);
-        Serial.flush();
-        */
-      }
+        LRAAmplitude[motorNum] = amplitude;
     }
-    else if (c2 == 'b' && c3 == 's')
+    else if (c2 == 'b')
     {
-      int motorNum = (int)c1 - 49;
-      int stopMS = ((int)c4-48)*100+((int)c5-48)*10+((int)c6-48);
-      if(0 <= motorNum && motorNum < 4)
+      if (c3 == 'r')
       {
-        ermBumpStopMS[motorNum] = stopMS;
-        /*
-        Serial.print("ERM motor ");
-        Serial.print(motorNum+1);
-        Serial.print(" BumpStopMS: ");
-        Serial.println(stopMS);
-        Serial.flush();
-        */
+        int motorNum = (int)c1 - 49;
+        int runMS = ((int)c4-48)*100+((int)c5-48)*10+((int)c6-48);
+        if(0 <= motorNum && motorNum < 4)
+          LRARunMS_ForBumpiness[motorNum] = runMS;
+      }
+      else if (c3 == 's')
+      {
+        int motorNum = (int)c1 - 49;
+        int stopMS = ((int)c4-48)*100+((int)c5-48)*10+((int)c6-48);
+        if(0 <= motorNum && motorNum < 4)
+          LRAStopMS_ForBumpiness[motorNum] = stopMS;
       }
     }
   }
 }
 
-// Function: loopMotorOnOff
-// Turn on LRA if true (166Hz full-powered)
 void loopMotorOnOff ()
 {
-  int i;
-  for(i=0;i<4;i++)
+  for(int i=0;i<4;i++)
   {
-    if(ermBurst[i])
+    if(LRAOn[i])
     {
-      unsigned long passedTime = millis() - ermRunStartTime[i];
-
-      /*      
-      Serial.print("millis():  ");
-      Serial.print(millis());
-      Serial.print(", ermRunStartTime[i]: ");
-      Serial.print(ermRunStartTime[i]);
-      Serial.print(", passedTime: ");
-      Serial.println(passedTime);
-      */
-      if(passedTime > 500)
-      {       
-        ermTurnOff(i);
-        ermOn[i] = false;
-        ermBurst[i] = false;
-      }  
-    }
-    if(ermOn[i])
-    {
-      unsigned long overDrivingTime = 40;
-      unsigned long brakingTime = 10;
-      unsigned long passedTime = ((millis() - ermRunStartTime[i]) %(ermBumpRunMS[i]+ ermBumpStopMS[i]));
-      /*
-      Serial.print("passedTime: ");
-      Serial.print(passedTime);
-      */
-      // Normal(steady) vibration
-      if(ermBumpStopMS[i] == 0)
-      {
-        ermTurnOn(i, 1);
-        //Serial.println(", On(Normal)");
-      }
-      // Bumpy (Rough) vibration
-      else
-      {
-        if(0 <= passedTime && passedTime < overDrivingTime)
-        {
-          ermTurnOn(i, 2);  // 1 : normal (3.3V), 2: Overdrive (5V), 3: Braking (5V)
-          //Serial.println(", On(OverDrive) ");
-        }
-        else if (overDrivingTime <= passedTime && passedTime < ermBumpRunMS[i])
-        {
-          ermTurnOn(i, 1);  // 1 : normal (3.3V), 2: Overdrive (5V), 3: Braking (5V)
-          //Serial.println(", On(Normal)");
-        }
-        
-        else if (ermBumpRunMS[i]<= passedTime && passedTime < ermBumpRunMS[i] + brakingTime)
-        {
-          ermTurnOn(i, 3);  // 1 : normal (3.3V), 2: Overdrive (5V), 3: Braking (5V)       
-          //Serial.println(", On(Braking)");   
-        }
-        else
-        {
-          ermTurnOff(i);  
-          //Serial.println(", Off");
-        }  
-      }
+      unsigned long passedTime = ((millis() - LRARunStartTime[i]) %(LRARunMS_ForBumpiness[i] + LRAStopMS_ForBumpiness[i]));
+      if(0 <= passedTime && passedTime < LRARunMS_ForBumpiness[i])
+        LRAOnOff(i);  
     }  
   }
 }
 
-void turnOffAll()
+/* PWM Control
+ * https://www.arduino.cc/en/Tutorial/SecretsOfArduinoPWM  
+ */
+void LRAOnOff(int motorNum)
 {
-  int i;
-  for(i=0;i<4;i++)
-    ermOn[i] = false;
-}
-
-// drivingMode: 1 - 3.3V, 2 - 5V
-void ermTurnOn(int motorNum, int drivingMode)
-{
-  int motors_f[4] = {erm1_f, erm2_f, erm3_f, erm4_f};
-  int motors_r[4] = {erm1_r, erm2_r, erm3_r, erm4_r};
-
-  PWMpercent = 80;
-  if(drivingMode == 1)  // 1 : normal (3.3V)  
-  {
-    analogWrite(motors_f[motorNum], 255);
-    analogWrite(motors_r[motorNum], (255 * (100 - PWMpercent))/100);
-  }
-  else if (drivingMode == 2)  // 2: Overdrive (5V)    
-  {
-    analogWrite(motors_f[motorNum], 255);
-    analogWrite(motors_r[motorNum], 0);
-  }
-  else if (drivingMode == 3)  // 3: Braking (5V)       
-  {
-    analogWrite(motors_f[motorNum], 0);
-    analogWrite(motors_r[motorNum], 255);
-  }
-}
-
-void ermTurnOff(int motorNum)
-{
-  int motors_f[4] = {erm1_f, erm2_f, erm3_f, erm4_f};
-  int motors_r[4] = {erm1_r, erm2_r, erm3_r, erm4_r};
-
-  analogWrite(motors_f[motorNum], 0);
-  analogWrite(motors_r[motorNum], 0);
+  int LRAs_F[4] = {LRA1_F, LRA2_F, LRA3_F, LRA4_F};
+  int LRAs_R[4] = {LRA1_R, LRA2_R, LRA3_R, LRA4_R};
+  
+  digitalWrite(LRAs_F[motorNum], HIGH);
+  digitalWrite(LRAs_R[motorNum], LOW);
+  delayMicroseconds((int)(((float)LRAPeriod[motorNum] / (float)2)*((float)LRAAmplitude[motorNum]/(float)100)));
+  
+  digitalWrite(LRAs_F[motorNum], LOW);
+  digitalWrite(LRAs_R[motorNum], LOW);
+  delayMicroseconds((int)(((float)LRAPeriod[motorNum] / (float)2)*(1 - ((float)LRAAmplitude[motorNum]/(float)100))));
+  
+  digitalWrite(LRAs_F[motorNum], LOW);
+  digitalWrite(LRAs_R[motorNum], HIGH);
+  delayMicroseconds((int)(((float)LRAPeriod[motorNum] / (float)2)*((float)LRAAmplitude[motorNum]/(float)100)));
+  
+  digitalWrite(LRAs_F[motorNum], LOW);
+  digitalWrite(LRAs_R[motorNum], LOW);
+  delayMicroseconds((int)(((float)LRAPeriod[motorNum] / (float)2)*(1 - ((float)LRAAmplitude[motorNum]/(float)100))));
 }
