@@ -31,7 +31,7 @@ This repository provides materials for reproducing our work:
 
 You can compose unique vibrations, and produce the Heterogeneous Stroke in Sandbox Program!
 
-### Misc. Information
+## Misc. Information
 
 * We used BD6221 motor driver to implement micro-level PWM control for LRA motors (BD6221 Datasheet: http://www.datasheetq.com/datasheet-download/308094/1/ROHM/BD6221)
 * We used LRA motor of 10 mm diameter and 3.6mm thickness, with 170 Hz resonance frequency. (Model used in our paper was provided from Samsung Electro-mechanics but it's not buyable for public. Thus, we leave the specs here)
