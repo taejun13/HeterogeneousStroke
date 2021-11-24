@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HeterogeneousStroke"
         mc:Ignorable="d"
-        Title="MainWindow" Height="975.718" Width="1454.254"
+        Title="HeteroStroke" Height="975.718" Width="1454.254"
         FontFamily="Arial">
     <Grid Margin="0,0,0,0">
         <Image Source="./img/hand.png" Margin="10,64,1184,579"></Image>
