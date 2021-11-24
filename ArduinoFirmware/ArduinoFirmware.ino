@@ -1,13 +1,16 @@
-/*
- * Writer: Taejun Kim, HCI Lab KAIST
+/*  
+ * Writer: Taejun Kim, HCI Lab KAIST - https://taejun13.github.io/
  * Last Update: 2020. 5. 6
+ * Heterogeneous Stroke: Using Unique Vibration Cues to Improve the Wrist-Worn Spatiotemporal Tactile Display
+ * ACM CHI 21': Conference on Human Factors in Computing Systems.
+ * DOI: https://dl.acm.org/doi/abs/10.1145/3411764.3445448
  * Command (Serial Input) Convention: 
  *  1) Start vibratiing for i-th actuator: iv  (ex. 1v, 2v, 3v, 4v)
  *  2) Stop vibrationg for i-th actuator: is (ex. 1s, 2s, 3s, 4s)
  *  3) Set vibrating frequency F-Hz for i-th actuator: ifF (ex. 1f250, 2f250, 3f170, 4f170)
  *  4) Set power level A(%) for i-th actuator: iaA (ex. 1a100, 2a050, 3a100, 4a050)
  *  5) Set on/off modulation on waveform (for "Bumpy" vibration ) - Vibrating On time T for i-th actuator: ibrT (ex. 1br100, 2br040, 3br100 4br040) 
- *  6) Set on/off modulation on waveform (for "Bumpy" vibration ) - Vibrating Off time T for i-th actuator: ibsT (ex. 1bs000, 2br040, 3br000 4br040) 
+ *  6) Set on/off modulation on waveform (for "Bumpy" vibration ) - Vibrating Off time T for i-th actuator: ibsT (ex. 1bs000, 2bs040, 3bs000 4bs040) 
  *  (1br100, 1bs000 means that 1st actuator keeps vibrating without on/off modulation)
  *  (2br040, 2bs040 means that 1st actuator repeats 40ms of vibration and 40 ms of rest (= 12.5Hz on/off modulation waveform) 
  *  
