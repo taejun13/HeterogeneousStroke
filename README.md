@@ -19,7 +19,7 @@ More information about this work can be found in: [Paper](https://taejun13.githu
 
 This repository provides materials for reproducing our work:
 * Sandbox program (C#) of Heterogeneous Stroke interface
-* Arduino firmware codes that offers independent control of each vibration motors.
+* Arduino firmware code that offers independent control of each vibration motors.
 * 3D model (.stl) of watch frame
 * Misc. information (e.g., actuator models, Operating Voltages...)
 
